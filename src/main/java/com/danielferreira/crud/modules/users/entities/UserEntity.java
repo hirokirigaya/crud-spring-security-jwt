@@ -1,6 +1,7 @@
 package com.danielferreira.crud.modules.users.entities;
 
 import com.danielferreira.crud.modules.users.enums.UserRole;
+import com.danielferreira.crud.modules.users.repositories.UserRepository;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -26,6 +27,11 @@ public class UserEntity implements UserDetails {
     private String password;
     private UserRole role;
 
+    public UserEntity(String login, String password, UserRole role) {
+        this.login = login;
+        this.password = password;
+        this.role = role;
+    }
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         if (this.role == UserRole.ADMIN) return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_USER"));
