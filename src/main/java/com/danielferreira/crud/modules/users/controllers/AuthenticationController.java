@@ -1,6 +1,8 @@
 package com.danielferreira.crud.modules.users.controllers;
 
+import com.danielferreira.crud.modules.infra.security.TokenService;
 import com.danielferreira.crud.modules.users.dto.AuthenticationDTO;
+import com.danielferreira.crud.modules.users.dto.LoginResponseDTO;
 import com.danielferreira.crud.modules.users.dto.RegisterDTO;
 import com.danielferreira.crud.modules.users.entities.UserEntity;
 import com.danielferreira.crud.modules.users.repositories.UserRepository;
@@ -25,11 +27,15 @@ public class AuthenticationController {
     @Autowired
     UserRepository repository;
 
+    @Autowired
+    private TokenService tokenService;
+
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody @Valid AuthenticationDTO authenticationDTO) {
+    public ResponseEntity<LoginResponseDTO> login(@RequestBody @Valid AuthenticationDTO authenticationDTO) {
         var usernamePassword = new UsernamePasswordAuthenticationToken(authenticationDTO.login(), authenticationDTO.password());
         var auth = this.authenticationManager.authenticate(usernamePassword);
-        return ResponseEntity.ok().build();
+        var token = tokenService.generateToken((UserEntity) auth.getPrincipal());
+        return ResponseEntity.ok(new LoginResponseDTO(token));
     };
 
     @PostMapping("/register")
